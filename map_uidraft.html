@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAP</title>
+<style>
+:root{--blue:#204396;--blue2:#3159a8;--yellow:#ffdc2f;--ink:#17233d;--muted:#71809b;--line:#e5eaf2;--paper:#fff;--bg:#f3f6fb;--soft:#edf2fb;--green:#23845c;--red:#d65b55}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.topbar{height:66px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:17px;letter-spacing:-.3px}.brand-mark{width:34px;height:34px;border-radius:10px;background:var(--blue);display:grid;place-items:center;color:var(--yellow);font-size:19px}
+.brand small{display:block;color:var(--muted);font-weight:500;font-size:10px;letter-spacing:.7px;text-transform:uppercase;margin-top:-2px}
+.top-actions{display:flex;gap:9px;align-items:center}.pill{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 12px;color:#53617b;font-size:12px}.pill strong{color:var(--green)}
+.layout{height:calc(100vh - 66px);min-height:650px;display:grid;grid-template-columns:285px minmax(360px,1fr) 310px;gap:13px;padding:13px;max-width:1800px;margin:auto}
+.panel,.map-panel{background:#fff;border:1px solid var(--line);border-radius:13px;min-height:0;overflow:hidden}
+.panel{display:flex;flex-direction:column}.panel-head{padding:17px 17px 13px;border-bottom:1px solid var(--line)}.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.15px;color:var(--muted);text-transform:uppercase}.panel h2{font-size:16px;margin:4px 0 0;letter-spacing:-.3px}.panel-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.search-wrap{padding:12px 14px 8px}.search{width:100%;border:1px solid var(--line);background:#f8faff;border-radius:8px;padding:10px 11px;outline:none}.search:focus{border-color:var(--blue)}
+.location-list{overflow:auto;padding:0 10px 15px}.building{margin:6px 0;border:1px solid var(--line);border-radius:9px;overflow:hidden}.building-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 11px;background:#fff;border:0;text-align:left;font-weight:700;color:#263653}.building-head:hover{background:#f8faff}.building-head span:last-child{color:var(--muted);font-size:11px}.floor{padding:7px 8px;background:#f8faff;border-top:1px solid var(--line)}.floor-title{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#77849c;font-weight:800;padding:5px 6px}.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.room{border:1px solid #e4e9f2;background:#fff;color:#34435e;border-radius:6px;padding:6px 3px;font-size:11px}.room:hover{border-color:var(--blue);color:var(--blue)}.room.selected-start{background:#e9f5ef;border-color:#9acdb3;color:#176844}.room.selected-end{background:#fff6d2;border-color:#f0d36a;color:#765d00}
+.route-inputs{padding:14px;border-bottom:1px solid var(--line)}.field-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:800;color:var(--muted);margin:0 0 6px}.select-like{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;color:var(--ink);margin-bottom:10px}.select-search{width:100%;border:1px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;padding:8px 10px;background:#f8faff;color:var(--ink);font-size:11px;outline:none}.select-search:focus{border-color:var(--blue)}.select-search+.select-like{border-radius:0 0 8px 8px;margin-bottom:10px}.swap-row{display:flex;align-items:center;gap:8px}.swap{border:1px solid var(--line);background:#fff;border-radius:8px;width:34px;height:34px;color:var(--blue);font-size:17px;margin-top:-8px}.primary{width:100%;border:0;background:var(--blue);color:#fff;border-radius:8px;padding:11px;font-weight:700;margin-top:2px}.primary:hover{background:#18377a}.secondary{border:1px solid var(--line);background:#fff;color:#44536d;border-radius:8px;padding:8px 10px;font-size:12px}.map-panel{position:relative;display:flex;flex-direction:column}.map-toolbar{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:8px}.map-title{font-weight:750}.map-meta{font-size:11px;color:var(--muted)}.toolbar-right{display:flex;gap:6px;align-items:center}.floor-select{border:1px solid var(--line);border-radius:7px;padding:7px 9px;background:#fff;color:#35435c;font-size:12px}.map-stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#4b963f}
+#mapSvg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}#mapSvg{background:transparent}#mapSvg.dragging{cursor:grabbing}.map-legend{position:absolute;left:13px;bottom:13px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 11px;display:flex;gap:12px;box-shadow:0 3px 12px #1d315010;font-size:10px;color:#62708a}.legend-item{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.map-controls{position:absolute;right:13px;bottom:13px;display:grid;gap:5px}.map-controls button{width:32px;height:32px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--blue);font-size:17px;box-shadow:0 2px 8px #1d315010}.map-hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-size:10px;color:#71809b;background:#ffffffdf;border:1px solid var(--line);border-radius:20px;padding:5px 10px;pointer-events:none;white-space:nowrap}
+.route-summary{padding:12px 15px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.summary-stats{display:flex;gap:18px}.stat strong{display:block;font-size:15px}.stat span{font-size:10px;color:var(--muted)}
+.steps-head{padding:17px;border-bottom:1px solid var(--line)}.steps-head h2{margin:4px 0 0;font-size:16px}.route-status{display:flex;align-items:center;gap:6px;color:var(--green);font-size:11px;margin-top:6px}.route-status i{width:7px;height:7px;background:var(--green);border-radius:50%}
+.step-card{margin:14px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.step-visual{height:142px;background:#eef3fb;display:grid;place-items:center;position:relative}.step-visual svg{width:100%;height:100%}.step-number{position:absolute;top:10px;left:10px;background:var(--blue);color:#fff;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:800}.step-copy{padding:13px}.step-copy h3{margin:0 0 5px;font-size:14px}.step-copy p{margin:0;color:#687791;font-size:12px}.step-distance{font-size:11px;color:var(--blue);font-weight:750;margin-top:10px}
+.step-nav{display:flex;gap:8px;padding:0 14px}.step-nav button{flex:1}.step-progress{height:4px;background:#edf1f7;margin:14px;border-radius:5px;overflow:hidden}.step-progress div{height:100%;background:var(--yellow);width:0;transition:width .2s}.steps-list{padding:0 14px 14px;overflow:auto}.mini-step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #f0f2f6;align-items:center;cursor:pointer}.mini-step.active{color:var(--blue)}.mini-icon{width:25px;height:25px;border-radius:7px;background:#edf2fb;display:grid;place-items:center;color:var(--blue);font-size:11px;flex-shrink:0}.mini-step.active .mini-icon{background:var(--yellow);color:#5e4b00}.mini-text{font-size:11px}.mini-text small{display:block;color:var(--muted);font-size:10px}
+.user-chip{display:flex;align-items:center;gap:6px;font-size:11px;color:#53617b}.user-dot{width:8px;height:8px;background:#2789d8;border:2px solid #dcefff;border-radius:50%;box-sizing:content-box}
+.modal-backdrop{position:fixed;inset:0;background:#13213c66;display:grid;place-items:center;z-index:20;padding:20px}.modal{width:min(460px,100%);background:#fff;border-radius:15px;padding:24px;box-shadow:0 18px 60px #10204430}.modal h2{margin:0 0 8px;font-size:20px}.modal p{color:#66748d;font-size:13px;line-height:1.6}.tip-icon{width:42px;height:42px;border-radius:12px;background:#fff5c5;color:#725900;display:grid;place-items:center;font-size:21px;margin-bottom:15px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.modal-backdrop.hidden{display:none}
+.dev-panel{position:fixed;right:16px;bottom:16px;width:300px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 30px #10204422;padding:14px;z-index:10;display:none}.dev-panel.open{display:block}.dev-panel h3{margin:0 0 10px;font-size:14px}.dev-panel input,.dev-panel select{width:100%;padding:8px;border:1px solid var(--line);border-radius:7px;margin:4px 0 8px}.dev-actions{display:flex;gap:6px}.dev-actions button{flex:1}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#17233d;color:#fff;border-radius:8px;padding:9px 14px;font-size:12px;z-index:30;display:none}
+@media(max-width:1050px){.layout{grid-template-columns:245px minmax(300px,1fr);height:auto;min-height:calc(100vh - 66px)}.right-panel{grid-column:1/-1;min-height:400px}.map-panel{min-height:620px}}
+@media(max-width:680px){.topbar{padding:0 13px}.top-actions .pill:first-child{display:none}.layout{display:flex;flex-direction:column;padding:8px;gap:8px}.left-panel{min-height:390px;max-height:490px}.map-panel{min-height:480px}.right-panel{min-height:400px}.map-toolbar{padding:0 10px}.map-hint{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">⌖</div><div>Map<small>School navigation</small></div></div>
+  <div class="top-actions"><div class="pill"><strong>●</strong> Demo campus · Offline map</div><button class="pill" id="devToggle">⚙ Developer mode</button></div>
+</header>
+<main class="layout">
+  <aside class="panel left-panel">
+    <div class="panel-head"><div class="eyebrow">Explore campus</div><h2>Choose a location</h2><div class="panel-sub">Select a room to set your start or destination.</div></div>
+    <div class="route-inputs">
+      <label class="field-label" for="startSearch">Starting point</label>
+      <input class="select-search" id="startSearch" placeholder="⌕ Search starting locations…" autocomplete="off">
+      <select class="select-like" id="startSelect"><option value="ENT">Main entrance</option></select>
+      <div class="swap-row"><div style="flex:1"><label class="field-label" for="endSearch">Destination</label><input class="select-search" id="endSearch" placeholder="⌕ Search destination…" autocomplete="off"><select class="select-like" id="endSelect"><option value="R1101">Room 1101</option></select></div><button class="swap" id="swapBtn" title="Swap locations">↕</button></div>
+      <button class="primary" id="routeBtn">Find shortest route →</button>
+      <button class="secondary" id="gpsBtn" style="width:100%;margin-top:7px">◎ Use simulated GPS position</button>
+    </div>
+    <div class="search-wrap"><input class="search" id="locationSearch" placeholder="⌕  Search rooms or locations…"></div>
+    <div class="location-list" id="locationList"></div>
+  </aside>
+
+  <section class="map-panel">
+    <div class="map-toolbar"><div><div class="map-title">Campus map</div><div class="map-meta" id="mapMeta">All Buildings · Floor 1</div></div><div class="toolbar-right"><select class="floor-select" id="floorSelect"><option value="1">Floor 1</option><option value="2">Floor 2</option><option value="3">Floor 3</option></select><button class="secondary" id="fitBtn">Fit route</button></div></div>
+    <div class="map-stage" id="mapStage">
+      <svg id="mapSvg" viewBox="0 0 1160 560" aria-label="Interactive campus map">
+        <g id="mapContent"></g>
+      </svg>
+      <div class="map-hint">Drag to pan · Scroll to zoom · Select a floor</div>
+      <div class="map-legend"><span class="legend-item"><i class="dot" style="background:#204396"></i> Room</span><span class="legend-item"><i class="dot" style="background:#ffdc2f"></i> Junction</span><span class="legend-item"><i class="dot" style="background:#2789d8"></i> You</span><span class="legend-item"><i class="dot" style="background:#23845c"></i> Route</span></div>
+      <div class="map-controls"><button id="zoomIn">+</button><button id="zoomOut">−</button><button id="resetMap">⌂</button></div>
+    </div>
+    <div class="route-summary"><div class="summary-stats"><div class="stat"><strong id="distanceStat">—</strong><span>Total distance</span></div><div class="stat"><strong id="timeStat">—</strong><span>Estimated time</span></div><div class="stat"><strong id="turnStat">—</strong><span>Navigation steps</span></div></div><div class="user-chip"><i class="user-dot"></i> Mock location active</div></div>
+  </section>
+
+  <aside class="panel right-panel">
+    <div class="steps-head"><div class="eyebrow">Your journey</div><h2>Step-by-step directions</h2><div class="panel-sub">The active node and next walkway segment are highlighted on the map.</div><div class="route-status"><i></i><span id="routeStatus">Ready to navigate</span></div></div>
+    <div class="step-card"><div class="step-visual" id="stepVisual"><svg viewBox="0 0 300 140"><path d="M35 70 H265" stroke="#c8d4e6" stroke-width="8" stroke-linecap="round"/><circle cx="150" cy="70" r="17" fill="#ffdc2f"/><path d="M143 70l5 5 10-12" fill="none" stroke="#725900" stroke-width="3" stroke-linecap="round"/></svg><span class="step-number">READY</span></div><div class="step-copy"><h3 id="stepTitle">Choose your destination</h3><p id="stepDescription">Your route instructions will appear here once you find a path.</p><div class="step-distance" id="stepDistance">Pick two locations to begin</div></div></div>
+    <div class="step-nav"><button class="secondary" id="prevStep" disabled>← Previous</button><button class="primary" id="nextStep" disabled>Next step →</button></div>
+    <div class="step-progress"><div id="progressBar"></div></div>
+    <div class="steps-list" id="stepsList"><div class="panel-sub">No route yet. Choose a starting point and destination.</div></div>
+  </aside>
+</main>
+
+<div class="dev-panel" id="devPanel">
+  <h3>Developer tools <span style="color:#8995aa;font-weight:400;font-size:10px">MOCK GRAPH</span></h3>
+  <label class="field-label">Add a junction node</label><input id="newNodeId" placeholder="e.g. J199">
+  <div class="dev-actions"><button class="secondary" id="addNodeBtn">＋ Add node</button><button class="secondary" id="removeNodeBtn">− Remove selected</button></div>
+  <label class="field-label" style="margin-top:12px">Connect two nodes</label><select id="edgeFrom"></select><select id="edgeTo"></select><input id="edgeWeight" type="number" min="1" value="10" placeholder="Distance (m)">
+  <button class="primary" id="addEdgeBtn">＋ Add / update edge</button>
+  <p style="font-size:10px;color:#7b879c;margin:10px 0 0">Changes are in-memory only. Reload to restore demo data. Select a node on the map to remove it.</p>
+</div>
+<div class="modal-backdrop" id="welcomeModal"><div class="modal"><div class="tip-icon">⌖</div><div class="eyebrow">A quick campus guide</div><h2>Find your way around school.</h2><p>Choose where you're starting and where you want to go. CampusWay calculates a shortest walking route through rooms, corridors, junctions and stairs. Use the floor selector to explore the campus map, and follow the steps on the right.</p><p><strong>Tip:</strong> This demo uses mock locations and distances. GPS, real floor plans and photos can be connected later.</p><div class="modal-actions"><button class="primary" id="dismissWelcome" style="width:auto;padding:10px 18px">Got it, let's go</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const nodes = {
+  ENT:{id:"ENT",label:"Main entrance",type:"entrance",building:"1",floor:1,position:{x:75,y:280,z:0}},
+  J101:{id:"J101",label:"Lobby junction",type:"junction",building:"1",floor:1,position:{x:180,y:280,z:0}},
+  J102:{id:"J102",label:"East corridor",type:"junction",building:"1",floor:1,position:{x:390,y:280,z:0}},
+  J103:{id:"J103",label:"North corridor",type:"junction",building:"1",floor:1,position:{x:390,y:135,z:0}},
+  J104:{id:"J104",label:"West corridor",type:"junction",building:"1",floor:1,position:{x:180,y:135,z:0}},
+  R1101:{id:"R1101",label:"Room 1101",type:"room",building:"1",floor:1,position:{x:280,y:205,z:0}},
+  R1102:{id:"R1102",label:"Room 1102",type:"room",building:"1",floor:1,position:{x:280,y:355,z:0}},
+  R1103:{id:"R1103",label:"Room 1103",type:"room",building:"1",floor:1,position:{x:500,y:280,z:0}},
+  R1104:{id:"R1104",label:"Library",type:"room",building:"1",floor:1,position:{x:500,y:135,z:0}},
+  ST1A:{id:"ST1A",label:"Staircase A · Floor 1",type:"stairs",building:"1",floor:1,position:{x:180,y:400,z:0}},
+  R1201:{id:"R1201",label:"Room 1201",type:"room",building:"1",floor:2,position:{x:280,y:205,z:4}},
+  R1202:{id:"R1202",label:"Room 1202",type:"room",building:"1",floor:2,position:{x:280,y:355,z:4}},
+  J201:{id:"J201",label:"Floor 2 corridor",type:"junction",building:"1",floor:2,position:{x:180,y:280,z:4}},
+  J202:{id:"J202",label:"Floor 2 east corridor",type:"junction",building:"1",floor:2,position:{x:390,y:280,z:4}},
+  ST2A:{id:"ST2A",label:"Staircase A · Floor 2",type:"stairs",building:"1",floor:2,position:{x:180,y:400,z:4}},
+  R1301:{id:"R1301",label:"Room 1301",type:"room",building:"1",floor:3,position:{x:280,y:205,z:8}},
+  J301:{id:"J301",label:"Floor 3 corridor",type:"junction",building:"1",floor:3,position:{x:180,y:280,z:8}},
+  ST3A:{id:"ST3A",label:"Staircase A · Floor 3",type:"stairs",building:"1",floor:3,position:{x:180,y:400,z:8}},
+  B2ENT:{id:"B2ENT",label:"Building 2 entrance",type:"entrance",building:"2",floor:1,position:{x:705,y:280,z:0}},
+  B2J1:{id:"B2J1",label:"Building 2 lobby",type:"junction",building:"2",floor:1,position:{x:810,y:280,z:0}},
+  B2R2101:{id:"B2R2101",label:"Room 2101",type:"room",building:"2",floor:1,position:{x:950,y:205,z:0}},
+  B2ST:{id:"B2ST",label:"Building 2 stair",type:"stairs",building:"2",floor:1,position:{x:810,y:400,z:0}}
+};
+let edges = [
+ ["ENT","J101",18],["J101","J102",25],["J102","J103",18],["J103","J104",24],["J104","J101",20],
+ ["J101","R1101",15],["J101","R1102",18],["J102","R1103",16],["J103","R1104",14],["J101","ST1A",12],
+ ["ST1A","ST2A",16],["ST2A","ST3A",16],["ST2A","J201",12],["J201","J202",25],["J201","R1201",15],["J201","R1202",18],["ST3A","J301",12],["J301","R1301",15],
+ ["ENT","B2ENT",85],["B2ENT","B2J1",18],["B2J1","B2R2101",18],["B2J1","B2ST",12]
+].map(([from,to,weight])=>({from,to,weight}));
+let currentPath=[], currentSteps=[], activeStep=0, startId="ENT", endId="R1101", userId="J101";
+let view={x:0,y:0,w:1160,h:560}, drag=null, selectedNode=null;
+const $=id=>document.getElementById(id);
+const svgNS="http://www.w3.org/2000/svg";
+function adjacency(){const a={};Object.keys(nodes).forEach(id=>a[id]=[]);edges.forEach(e=>{if(a[e.from]&&a[e.to]){a[e.from].push({id:e.to,weight:e.weight});a[e.to].push({id:e.from,weight:e.weight});}});return a;}
+function dijkstra(start,end){
+ const adj=adjacency(),dist={},prev={},unvisited=new Set(Object.keys(nodes));
+ Object.keys(nodes).forEach(id=>dist[id]=Infinity);dist[start]=0;
+ while(unvisited.size){let u=null;for(const id of unvisited)if(u===null||dist[id]<dist[u])u=id;
+ if(u===null||dist[u]===Infinity)break;unvisited.delete(u);if(u===end)break;
+ for(const v of adj[u])if(unvisited.has(v.id)&&dist[u]+v.weight<dist[v.id]){dist[v.id]=dist[u]+v.weight;prev[v.id]=u;}
+ }
+ if(dist[end]===Infinity)return null;const path=[];let cur=end;while(cur){path.unshift(cur);if(cur===start)break;cur=prev[cur];}return {path,distance:dist[end]};
+}
+function nodeLabel(id){return nodes[id]?.label||id}
+function nodeFloor(n){return String(n.floor)}
+function routeSteps(path){
+ return path.map((id,i)=>{const n=nodes[id],prev=nodes[path[i-1]],next=nodes[path[i+1]];let title,desc,kind;
+ if(i===0){title="Start at "+n.label;desc="Begin your journey here.";kind="start";}
+ else if(n.type==="stairs"){title="Take the stairs";desc=`Use ${n.label} to move to the next floor.`;kind="stairs";}
+ else if(i===path.length-1){title="Arrive at "+n.label;desc="You have reached your destination.";kind="end";}
+ else if(n.type==="room"){title="Pass "+n.label;desc="Continue along the connected corridor.";kind="room";}
+ else {title="Continue to "+n.label;desc="Follow the corridor to the next junction.";kind="walk";}
+ let d=0;if(next){const a=n.position,b=next.position;d=edges.find(e=>(e.from===id&&e.to===path[i+1])||(e.to===id&&e.from===path[i+1]))?.weight||Math.round(Math.hypot(a.x-b.x,a.y-b.y));}
+ return {id,title,desc,kind,distance:d};
+ });
+}
+function setOptions(){
+ const opts=Object.values(nodes).filter(n=>n.type!=="junction");
+ ["startSelect","endSelect"].forEach((sid)=>{const s=$(sid),old=s.value;s.innerHTML="";opts.forEach(n=>{const o=document.createElement("option");o.value=n.id;o.textContent=`${n.label} · B${n.building} F${n.floor}`;s.appendChild(o)});s.value=nodes[old]?old:(sid==="startSelect"?"ENT":"R1101");});
+ startId=$("startSelect").value;endId=$("endSelect").value;
+ $("edgeFrom").innerHTML="";$("edgeTo").innerHTML="";Object.values(nodes).forEach(n=>[ $("edgeFrom"),$("edgeTo") ].forEach(s=>{let o=document.createElement("option");o.value=n.id;o.textContent=n.id+" — "+n.label;s.append(o)}));
+}
+function filterLocationOptions(selectId,searchId){
+ const s=$(selectId),q=$(searchId).value.trim().toLowerCase(),chosen=s.value;
+ [...s.options].forEach(o=>{const n=nodes[o.value];o.hidden=!!q&&!(o.textContent.toLowerCase().includes(q)||(n&&n.id.toLowerCase().includes(q)));});
+ if(chosen&&s.selectedOptions[0]?.hidden){
+   const first=[...s.options].find(o=>!o.hidden);
+   if(first)s.value=first.value;
+ }
+}
+function buildLocationList(){
+ const root=$("locationList"),q=$("locationSearch").value.toLowerCase();root.innerHTML="";
+ const buildings=[["1","Classroom Building 1"],["2","Classroom Building 2"]];
+ buildings.forEach(([b,name])=>{const relevant=Object.values(nodes).filter(n=>n.building===b&&n.type!=="junction"&&(n.label.toLowerCase().includes(q)||n.id.toLowerCase().includes(q)));if(!relevant.length)return;
+ const wrap=document.createElement("div");wrap.className="building";const head=document.createElement("button");head.className="building-head";head.innerHTML=`<span>▾ &nbsp;${name}</span><span>${relevant.length} locations</span>`;const content=document.createElement("div");
+ const floors=[...new Set(relevant.map(n=>n.floor))].sort();floors.forEach(f=>{const group=document.createElement("div");group.className="floor";group.innerHTML=`<div class="floor-title">Floor ${f}</div>`;const grid=document.createElement("div");grid.className="room-grid";relevant.filter(n=>n.floor===f).forEach(n=>{const btn=document.createElement("button");btn.className="room"+(n.id===startId?" selected-start":"")+(n.id===endId?" selected-end":"");btn.textContent=n.label.replace("Room ","");btn.title=n.label;btn.onclick=()=>{if(!startId||startId===endId){startId=n.id;$("startSelect").value=n.id}else{endId=n.id;$("endSelect").value=n.id}buildLocationList();renderMap();};grid.append(btn)});group.append(grid);content.append(group)});
+ head.onclick=()=>{content.hidden=!content.hidden;head.firstChild.textContent=(content.hidden?"▸":"▾")+"  "+name};wrap.append(head,content);root.append(wrap);
+ });
+}
+function el(tag,attrs={},parent){const e=document.createElementNS(svgNS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(parent)parent.append(e);return e}
+function renderMap(){
+ const g=$("mapContent");g.innerHTML="";const floor=$("floorSelect").value;
+ // The site image lives inside the SVG coordinate system, so it pans and zooms with every map node.
+ el("image",{x:0,y:0,width:1160,height:560,href:"https://raw.githubusercontent.com/kattapis64/data/refs/heads/main/bg.png",preserveAspectRatio:"xMidYMid slice"},g);
+ // Building 1 footprint
+ el("rect",{x:40,y:75,width:560,height:380,rx:18,fill:"none",stroke:"none","stroke-width":2},g);
+ el("rect",{x:150,y:115,width:300,height:300,rx:8,fill:"none",stroke:"none","stroke-width":1},g);
+ el("text",{x:60,y:58,"font-size":12,"font-weight":800,fill:"#263653"},g).textContent="Building 1";
+ // Building 2 footprint
+ el("rect",{x:670,y:75,width:450,height:380,rx:18,fill:"none",stroke:"none","stroke-width":2},g);
+ el("rect",{x:780,y:115,width:240,height:300,rx:8,fill:"none",stroke:"none","stroke-width":1},g);
+ el("text",{x:690,y:58,"font-size":12,"font-weight":800,fill:"#263653"},g).textContent="Building 2";
+ // Outdoor walkway indicator on Floor 1
+ if(floor==="1"){
+   el("line",{x1:75,y1:280,x2:75,y2:495,stroke:"#dce4f0","stroke-width":12,"stroke-linecap":"round"},g);
+   el("line",{x1:75,y1:495,x2:705,y2:495,stroke:"#dce4f0","stroke-width":12,"stroke-linecap":"round"},g);
+   el("line",{x1:705,y1:495,x2:705,y2:280,stroke:"#dce4f0","stroke-width":12,"stroke-linecap":"round"},g);
+   el("text",{x:390,y:518,"text-anchor":"middle","font-size":10,"font-weight":700,fill:"#8995aa"},g).textContent="Campus walkway";
+ }
+ const visible=Object.values(nodes).filter(n=>String(n.floor)===floor);
+ const visibleIds=new Set(visible.map(n=>n.id));
+ // Current instruction node and the following node drive the map highlight.
+ const activeId=currentSteps[activeStep]?.id;
+ const nextId=currentSteps[activeStep+1]?.id;
+ edges.forEach(e=>{
+   if(!visibleIds.has(e.from)||!visibleIds.has(e.to))return;
+   const a=nodes[e.from].position,b=nodes[e.to].position;
+   if((e.from==="ENT"&&e.to==="B2ENT")||(e.from==="B2ENT"&&e.to==="ENT")){
+     el("polyline",{points:`${a.x},${a.y} ${a.x},495 ${b.x},495 ${b.x},${b.y}`,fill:"none",stroke:"#e8f4df","stroke-width":7,"stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":"10 8"},g);
+   }else{
+     el("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:"#e8f4df","stroke-width":9,"stroke-linecap":"round"},g);
+   }
+ });
+ // room blocks
+ visible.filter(n=>n.type==="room").forEach(n=>{el("rect",{x:n.position.x-34,y:n.position.y-23,width:68,height:46,rx:7,fill:"#ffffffd9",stroke:"#ffffff","stroke-width":1.5},g);el("text",{x:n.position.x,y:n.position.y+4,"text-anchor":"middle","font-size":11,"font-weight":700,fill:"#35517f"},g).textContent=n.label.replace("Room ","");});
+ // Route lines and path markers
+ for(let i=0;i<currentPath.length-1;i++){
+   const a=nodes[currentPath[i]],b=nodes[currentPath[i+1]];
+   if(nodeFloor(a)===floor&&nodeFloor(b)===floor){
+     if((a.id==="ENT"&&b.id==="B2ENT")||(a.id==="B2ENT"&&b.id==="ENT")){
+       el("polyline",{points:`${a.position.x},${a.position.y} ${a.position.x},495 ${b.position.x},495 ${b.position.x},${b.position.y}`,fill:"none",stroke:"#23845c","stroke-width":5,"stroke-linecap":"round","stroke-linejoin":"round"},g);
+     }else{
+       el("line",{x1:a.position.x,y1:a.position.y,x2:b.position.x,y2:b.position.y,stroke:"#23845c","stroke-width":5,"stroke-linecap":"round"},g);
+     }
+   }
+ }
+ visible.filter(n=>n.type!=="room").forEach(n=>{const isUser=n.id===userId,isStart=n.id===startId,isEnd=n.id===endId;let fill=n.type==="junction"?"#ffdc2f":n.type==="stairs"?"#9b83d5":n.type==="entrance"?"#23845c":"#204396";if(isUser)fill="#2789d8";
+ el("circle",{cx:n.position.x,cy:n.position.y,r:isUser?11:9,fill,stroke:"#fff","stroke-width":3},g);
+ el("text",{x:n.position.x,y:n.position.y-16,"text-anchor":"middle","font-size":10,"font-weight":700,fill:"#52617a"},g).textContent=isUser?"YOU":n.label.replace(" junction","").replace(" corridor","");
+ });
+ // Active node halo makes the instruction currently shown obvious on the map.
+ const activeNode=activeId&&nodes[activeId];
+ if(activeNode&&nodeFloor(activeNode)===floor){
+   const p=activeNode.position;
+   el("circle",{cx:p.x,cy:p.y,r:23,fill:"none",stroke:"#204396","stroke-width":4,opacity:.95},g);
+   el("circle",{cx:p.x,cy:p.y,r:29,fill:"none",stroke:"#ffdc2f","stroke-width":3,opacity:.9},g);
+ }
+ // Highlight room doors too, not only junction/stair nodes.
+ if(activeNode&&activeNode.type==="room"&&nodeFloor(activeNode)===floor){
+   const p=activeNode.position;
+   el("rect",{x:p.x-41,y:p.y-30,width:82,height:60,rx:10,fill:"none",stroke:"#204396","stroke-width":4},g);
+ }
+ [startId,endId].forEach((id,i)=>{const n=nodes[id];if(!n||nodeFloor(n)!==floor)return;const c=i===0?"#23845c":"#d69d00";el("circle",{cx:n.position.x,cy:n.position.y,r:15,fill:"none",stroke:c,"stroke-width":3},g);el("text",{x:n.position.x,y:n.position.y+29,"text-anchor":"middle","font-size":10,"font-weight":800,fill:c},g).textContent=i===0?"START":"DEST";});
+ $("mapMeta").textContent=`All Buildings · Level ${floor}`;
+}
+function fitRoute(){const visible=currentPath.map(id=>nodes[id]).filter(n=>n&&nodeFloor(n)===$("floorSelect").value);if(!visible.length){view={x:0,y:0,w:1160,h:560};}else{let xs=visible.map(n=>n.position.x),ys=visible.map(n=>n.position.y);let minX=Math.min(...xs)-120,maxX=Math.max(...xs)+120,minY=Math.min(...ys)-100,maxY=Math.max(...ys)+100;view={x:minX,y:minY,w:Math.max(300,maxX-minX),h:Math.max(220,maxY-minY)};}applyView();}
+function applyView(){$("mapSvg").setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`)}
+function updateRoute(){
+ startId=$("startSelect").value;endId=$("endSelect").value;
+ const result=dijkstra(startId,endId);if(!result){currentPath=[];currentSteps=[];$("routeStatus").textContent="No connected route";toast("No route found. Check the graph connections.");}
+ else{currentPath=result.path;currentSteps=routeSteps(result.path);activeStep=0;$("routeStatus").textContent="Route calculated";$("distanceStat").textContent=result.distance+" m";$("timeStat").textContent=Math.max(1,Math.ceil(result.distance/75))+" min";$("turnStat").textContent=currentSteps.length;$("floorSelect").value=nodeFloor(nodes[startId]);renderSteps();fitRoute();}
+ renderMap();buildLocationList();
+}
+function renderSteps(){
+ if(!currentSteps.length)return;const s=currentSteps[activeStep];$("stepTitle").textContent=s.title;$("stepDescription").textContent=s.desc;$("stepDistance").textContent=s.distance?`Next segment · ${s.distance} m`:"Journey point";
+ $("stepVisual").innerHTML=`<span class="step-number">STEP ${activeStep+1} / ${currentSteps.length}</span><svg viewBox="0 0 300 140"><path d="M30 70 H270" stroke="#cbd6e6" stroke-width="10" stroke-linecap="round"/><path d="M30 70 H${30+(240*(activeStep+1)/currentSteps.length)}" stroke="#23845c" stroke-width="5" stroke-linecap="round"/><circle cx="150" cy="70" r="18" fill="#ffdc2f"/><text x="150" y="75" text-anchor="middle" font-size="14" font-weight="800" fill="#725900">${s.kind==="stairs"?"↕":s.kind==="end"?"✓":s.kind==="start"?"●":"→"}</text></svg>`;
+ $("prevStep").disabled=activeStep===0;$("nextStep").disabled=activeStep===currentSteps.length-1;$("nextStep").textContent=activeStep===currentSteps.length-1?"Completed":"Next step →";$("progressBar").style.width=((activeStep+1)/currentSteps.length*100)+"%";
+ const list=$("stepsList");list.innerHTML="";currentSteps.forEach((st,i)=>{const row=document.createElement("div");row.className="mini-step"+(i===activeStep?" active":"");row.innerHTML=`<div class="mini-icon">${st.kind==="stairs"?"↕":st.kind==="end"?"✓":i+1}</div><div class="mini-text">${st.title}<small>${st.distance?st.distance+" m to next point":st.kind==="end"?"Destination":"Start"}</small></div>`;row.onclick=()=>{activeStep=i;const n=nodes[st.id];if(n){$("floorSelect").value=nodeFloor(n);renderMap();}renderSteps();};list.append(row)});
+}
+function toast(msg){const t=$("toast");t.textContent=msg;t.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display="none",2200)}
+function selectFloor(){renderMap();const f=$("floorSelect").value;const inFloor=currentPath.find(id=>nodeFloor(nodes[id])===f);if(inFloor){const idx=currentSteps.findIndex(s=>s.id===inFloor);if(idx>=0){activeStep=idx;renderSteps();}}}
+$("routeBtn").onclick=updateRoute;$("startSelect").onchange=()=>{startId=$("startSelect").value;buildLocationList();renderMap()};$("endSelect").onchange=()=>{endId=$("endSelect").value;buildLocationList();renderMap()};$("swapBtn").onclick=()=>{const a=$("startSelect").value;$("startSelect").value=$("endSelect").value;$("endSelect").value=a;updateRoute()};
+$("prevStep").onclick=()=>{if(activeStep>0){activeStep--;const n=nodes[currentSteps[activeStep].id];$("floorSelect").value=nodeFloor(n);renderMap();renderSteps();}};
+$("nextStep").onclick=()=>{if(activeStep<currentSteps.length-1){activeStep++;const n=nodes[currentSteps[activeStep].id];$("floorSelect").value=nodeFloor(n);renderMap();renderSteps();}};
+$("floorSelect").onchange=selectFloor;$("fitBtn").onclick=fitRoute;$("zoomIn").onclick=()=>{view.w*=.8;view.h*=.8;applyView()};$("zoomOut").onclick=()=>{view.w*=1.25;view.h*=1.25;applyView()};$("resetMap").onclick=()=>{view={x:0,y:0,w:1160,h:560};applyView()};
+$("gpsBtn").onclick=()=>{startId=userId;$("startSelect").value=userId;updateRoute();toast("Mock GPS position set as your starting point.")};
+$("locationSearch").oninput=buildLocationList;
+ $("startSearch").oninput=()=>filterLocationOptions("startSelect","startSearch");
+ $("endSearch").oninput=()=>filterLocationOptions("endSelect","endSearch");
+ $("devToggle").onclick=()=>$("devPanel").classList.toggle("open");
+$("dismissWelcome").onclick=()=>{ $("welcomeModal").classList.add("hidden");try{localStorage.setItem("campusway_seen","1")}catch(e){}};
+try{if(localStorage.getItem("campusway_seen"))$("welcomeModal").classList.add("hidden")}catch(e){}
+$("mapSvg").addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,view:{...view}};$("mapSvg").classList.add("dragging");$("mapSvg").setPointerCapture(e.pointerId)});
+$("mapSvg").addEventListener("pointermove",e=>{if(!drag)return;const r=$("mapSvg").getBoundingClientRect();view.x=drag.view.x-(e.clientX-drag.x)*drag.view.w/r.width;view.y=drag.view.y-(e.clientY-drag.y)*drag.view.h/r.height;applyView()});
+$("mapSvg").addEventListener("pointerup",()=>{drag=null;$("mapSvg").classList.remove("dragging")});
+$("mapSvg").addEventListener("wheel",e=>{e.preventDefault();const k=e.deltaY>0?1.1:.9;view.w*=k;view.h*=k;applyView()},{passive:false});
+$("addNodeBtn").onclick=()=>{const id=$("newNodeId").value.trim().toUpperCase();if(!id||nodes[id])return toast("Enter a unique node ID.");const base=Object.values(nodes).filter(n=>n.building==="1"&&n.floor===1);nodes[id]={id,label:id,type:"junction",building:"1",floor:1,position:{x:550,y:400,z:0}};setOptions();buildLocationList();renderMap();toast("Node added. Connect it using the edge editor.");};
+$("removeNodeBtn").onclick=()=>{const id=selectedNode||$("edgeFrom").value;if(!nodes[id])return toast("Choose a node first.");delete nodes[id];edges=edges.filter(e=>e.from!==id&&e.to!==id);if(startId===id)startId="ENT";if(endId===id)endId="ENT";setOptions();buildLocationList();updateRoute();
+if(window.matchMedia("(max-width: 680px)").matches){view={x:500,y:0,w:660,h:560};applyView();}toast("Node and its connections removed.");};
+$("addEdgeBtn").onclick=()=>{const from=$("edgeFrom").value,to=$("edgeTo").value,w=Number($("edgeWeight").value);if(from===to||!w||w<1)return toast("Choose two different nodes and a valid distance.");const old=edges.find(e=>(e.from===from&&e.to===to)||(e.to===from&&e.from===to));if(old)old.weight=w;else edges.push({from,to,weight:w});updateRoute();toast("Connection saved.");};
+setOptions();buildLocationList();updateRoute();
+if(window.matchMedia("(max-width: 680px)").matches){view={x:500,y:0,w:660,h:560};applyView();}
+</script>
+</body>
+</html>
