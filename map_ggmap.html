@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>MAP</title>
 <style>
 :root{--blue:#1a73e8;--blue-d:#1557b0;--navy:#204396;--yellow:#ffdc2f;--ink:#202124;--muted:#5f6368;--line:#e3e6ea;--green:#188038;--red:#d93025;--shadow:0 2px 6px rgba(60,64,67,.3),0 1px 2px rgba(60,64,67,.2)}
@@ -186,7 +186,7 @@ body.panel-open .right-panel>*{pointer-events:auto}
         <button class="icon-btn" id="swapBtn" title="Swap locations">⇅</button>
       </div>
       <div class="dir-actions">
-        <button class="link-btn" id="gpsBtn">◎ Use simulated GPS position</button>
+        <button class="link-btn" id="gpsBtn">◎ Use my location</button>
         <div><button class="link-btn" id="closeDir">Cancel</button> <button class="go-btn" id="routeBtn">Directions</button></div>
       </div>
     </div>
@@ -231,8 +231,8 @@ body.panel-open .right-panel>*{pointer-events:auto}
 <aside class="overlay card right-panel" id="rightPanel">
   <div class="steps-head">
     <button class="close-btn" id="closePanel" title="Close directions">✕</button>
-    <div class="eyebrow">Your journey</div><h2>Step-by-step directions</h2>
-    <div class="panel-sub">The active node and next walkway segment are highlighted on the map.</div>
+    <div class="eyebrow">Your journey</div><h2>Guided Directions</h2>
+    <div class="panel-sub">The next turning landmarks and walkway will be highlited</div>
     <div class="route-status"><i></i><span id="routeStatus">Ready to navigate</span></div>
     <div class="stats">
       <div class="stat"><strong id="distanceStat">—</strong><span>Total distance</span></div>
@@ -278,7 +278,33 @@ const nodes = {
   B2ENT:{id:"B2ENT",label:"Building 2 entrance",short:"Entrance",ly:"below",type:"entrance",building:"2",floor:1,position:{x:1160,y:735,z:0}},
   B2J1:{id:"B2J1",label:"Building 2 lobby",short:"Lobby 2",type:"junction",building:"2",floor:1,position:{x:1200,y:735,z:0}},
   B2R2101:{id:"B2R2101",label:"Room 2101",type:"room",building:"2",floor:1,position:{x:1225,y:690,z:0}},
-  B2ST:{id:"B2ST",label:"Building 2 stair",short:"Stairs",type:"stairs",building:"2",floor:1,position:{x:1230,y:785,z:0}}
+  B2ST:{id:"B2ST",label:"Building 2 stair",short:"Stairs",type:"stairs",building:"2",floor:1,position:{x:1230,y:785,z:0}},
+  RD1:{id:"RD1",label:"East road north",type:"junction",building:"Campus",floor:1,position:{x:1137,y:430,z:0}},
+  RD2:{id:"RD2",label:"East road south",type:"junction",building:"Campus",floor:1,position:{x:1137,y:640,z:0}},
+  RD3:{id:"RD3",label:"Plaza road",type:"junction",building:"Campus",floor:1,position:{x:1015,y:430,z:0}},
+  RD6:{id:"RD6",label:"Admin road",type:"junction",building:"Campus",floor:1,position:{x:1015,y:300,z:0}},
+  Y1:{id:"Y1",label:"Yellow walkway south",type:"junction",building:"Campus",floor:1,position:{x:1131,y:375,z:0}},
+  Y2:{id:"Y2",label:"Yellow walkway north",type:"junction",building:"Campus",floor:1,position:{x:1131,y:235,z:0}},
+  PZ1:{id:"PZ1",label:"Plaza junction",type:"junction",building:"Campus",floor:1,position:{x:1000,y:500,z:0}},
+  MR1:{id:"MR1",label:"Main road east",type:"junction",building:"Campus",floor:1,position:{x:800,y:500,z:0}},
+  MR2:{id:"MR2",label:"Main road middle",type:"junction",building:"Campus",floor:1,position:{x:560,y:500,z:0}},
+  MR3:{id:"MR3",label:"Main road south junction",type:"junction",building:"Campus",floor:1,position:{x:362,y:500,z:0}},
+  W2:{id:"W2",label:"Main road west",type:"junction",building:"Campus",floor:1,position:{x:230,y:500,z:0}},
+  MR4:{id:"MR4",label:"Main road far west",type:"junction",building:"Campus",floor:1,position:{x:60,y:500,z:0}},
+  SR1:{id:"SR1",label:"South road",type:"junction",building:"Campus",floor:1,position:{x:362,y:620,z:0}},
+  SR2:{id:"SR2",label:"South road end",type:"junction",building:"Campus",floor:1,position:{x:362,y:755,z:0}},
+  WP:{id:"WP",label:"Track path",type:"junction",building:"Campus",floor:1,position:{x:400,y:462,z:0}},
+  NR1:{id:"NR1",label:"Brown road south",type:"junction",building:"Campus",floor:1,position:{x:717,y:470,z:0}},
+  NR2:{id:"NR2",label:"Brown road middle",type:"junction",building:"Campus",floor:1,position:{x:717,y:300,z:0}},
+  PZ2:{id:"PZ2",label:"Flag plaza",short:"Plaza",type:"room",building:"Campus",floor:1,position:{x:923,y:540,z:0}},
+  RAD:{id:"RAD",label:"Admin building",short:"Admin",type:"room",building:"Campus",floor:1,position:{x:1068,y:305,z:0}},
+  RSC:{id:"RSC",label:"Science building",short:"Sci",type:"room",building:"Campus",floor:1,position:{x:1231,y:260,z:0}},
+  RCT:{id:"RCT",label:"Basketball court",short:"Court",type:"room",building:"Campus",floor:1,position:{x:913,y:260,z:0}},
+  RMB:{id:"RMB",label:"Main building",short:"Main",type:"room",building:"Campus",floor:1,position:{x:775,y:250,z:0}},
+  RSF:{id:"RSF",label:"Sports field",short:"Field",type:"room",building:"Campus",floor:1,position:{x:400,y:250,z:0}},
+  RB4:{id:"RB4",label:"Building 4",short:"B4",type:"room",building:"Campus",floor:1,position:{x:500,y:725,z:0}},
+  RB5:{id:"RB5",label:"Building 5",short:"B5",type:"room",building:"Campus",floor:1,position:{x:70,y:690,z:0}},
+  RB6:{id:"RB6",label:"Building 6",short:"B6",type:"room",building:"Campus",floor:1,position:{x:230,y:690,z:0}}
 };
 // weight omitted = auto-computed from map distance (≈0.25 m per map unit)
 let edges = [
@@ -286,11 +312,12 @@ let edges = [
  ["J101","J102"],["J102","J103"],["J101","J104"],
  ["J104","R1101"],["J104","R1102"],["J102","R1103"],["J103","R1104"],["J101","ST1A"],
  ["ST1A","ST2A",16],["ST2A","ST3A",16],["ST2A","J201"],["J201","J202"],["J202","R1201"],["J202","R1202"],["ST3A","J301"],["J301","R1301"],
- ["B2ENT","B2J1"],["B2J1","B2R2101"],["B2J1","B2ST"]
+ ["B2ENT","B2J1"],["B2J1","B2R2101"],["B2J1","B2ST"],
+["RD2","JR"],["RD1","RD2"],["J103","RD1"],["RD3","RD1"],["RD3","RD6"],["RD6","RAD"],["RD6","RCT"],["RD1","Y1"],["Y1","Y2"],["Y2","RSC"],["RD3","PZ1"],["PZ1","PZ2"],["PZ1","MR1"],["MR1","MR2"],["MR2","MR3"],["MR3","W2"],["W2","MR4"],["MR3","SR1"],["SR1","SR2"],["SR2","RB4"],["MR3","WP"],["WP","RSF"],["W2","RB6"],["MR4","RB5"],["MR1","NR1"],["NR1","NR2"],["NR2","RMB"]
 ].map(([from,to,weight])=>({from,to,weight}));
 edges.forEach(e=>{if(!e.weight){const a=nodes[e.from].position,b=nodes[e.to].position;e.weight=Math.max(6,Math.round(Math.hypot(a.x-b.x,a.y-b.y)*0.25));}});
 
-let currentPath=[], currentSteps=[], activeStep=0, startId=null, endId=null, userId="J101", currentFloor="1";
+let currentPath=[], currentSteps=[], activeStep=0, startId=null, endId=null, userId="ME", currentFloor="1";
 let view={x:0,y:0,w:1160,h:560}, drag=null, selectedNode=null;
 const $=id=>document.getElementById(id);
 const svgNS="http://www.w3.org/2000/svg";
@@ -321,19 +348,19 @@ function routeSteps(path){
 
 /* ---------- Search comboboxes ---------- */
 function labelFor(id){const n=nodes[id];return n?n.label:""}
-function searchable(){return Object.values(nodes).filter(n=>n.type!=="junction")}
+function searchable(){return Object.values(nodes).filter(n=>n.type==="room")}
 function makeCombo({input,list,onPick,gps}){
  const inp=$(input),box=$(list);
  function render(){
   const q=inp.value.trim().toLowerCase();box.innerHTML="";let count=0;
   if(gps&&(!q||"your location".includes(q))){
-   const o=document.createElement("div");o.className="opt";o.innerHTML=`<div class="opt-ic gps">◎</div><div class="opt-t">Your location<small>Simulated GPS · ${nodes[userId]?.label||""}</small></div>`;
+   const o=document.createElement("div");o.className="opt";o.innerHTML=`<div class="opt-ic gps">◎</div><div class="opt-t">Your location<small>${gpsFix?"Live GPS · ±"+Math.round(gpsFix.acc)+" m":"Waiting for GPS…"}</small></div>`;
    o.onmousedown=e=>{e.preventDefault();inp.value="Your location";box.classList.remove("open");onPick(userId,true)};box.append(o);count++;
   }
   searchable().filter(n=>!q||n.label.toLowerCase().includes(q)||n.id.toLowerCase().includes(q)).forEach(n=>{
    const o=document.createElement("div");o.className="opt";
    const ic=n.type==="stairs"?"↕":n.type==="entrance"?"⇥":"▣";
-   o.innerHTML=`<div class="opt-ic">${ic}</div><div class="opt-t">${n.label}<small>Building ${n.building} · Floor ${n.floor}</small></div>`;
+   o.innerHTML=`<div class="opt-ic">${ic}</div><div class="opt-t">${n.label}<small>${/^\d+$/.test(n.building)?"Building "+n.building:n.building} · Floor ${n.floor}</small></div>`;
    o.onmousedown=e=>{e.preventDefault();inp.value=n.label;box.classList.remove("open");onPick(n.id,false)};box.append(o);count++;
   });
   if(!count){box.innerHTML='<div class="opt-empty">No matching locations</div>'}
@@ -350,7 +377,7 @@ function tryRoute(){if(startId&&endId&&startId!==endId)updateRoute();}
 
 makeCombo({input:"endSearchSimple",list:"endListSimple",onPick:(id)=>{endId=id;enterDirMode();$("endSearch").value=labelFor(id);
   if(!startId){$("startSearch").focus();}else tryRoute();renderMap();}});
-makeCombo({input:"startSearch",list:"startList",gps:true,onPick:(id,isGps)=>{startId=id;if(!isGps)$("startSearch").value=labelFor(id);renderMap();tryRoute();}});
+makeCombo({input:"startSearch",list:"startList",gps:true,onPick:(id,isGps)=>{if(isGps&&!gpsFix){startWatch();pendingGps=true;$("startSearch").value="Your location";toast("Getting your location…");return}startId=id;if(!isGps)$("startSearch").value=labelFor(id);renderMap();tryRoute();}});
 makeCombo({input:"endSearch",list:"endList",onPick:(id)=>{endId=id;renderMap();tryRoute();}});
 
 /* ---------- Map rendering ---------- */
@@ -380,6 +407,7 @@ function renderMap(){
    const a=nodes[e.from].position,b=nodes[e.to].position;
    el("line",{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:"#fff","stroke-opacity":.72,"stroke-width":6*k,"stroke-linecap":"round"},g);
  });
+ if(floor==="1"&&gpsFix)el("circle",{cx:gpsFix.x,cy:gpsFix.y,r:Math.min(150,gpsFix.acc/M_PER_UNIT),fill:"#2789d8","fill-opacity":.15,stroke:"#2789d8","stroke-opacity":.4,"stroke-width":1*k},g);
  // route casing + line
  for(let i=0;i<currentPath.length-1;i++){
    const a=nodes[currentPath[i]],b=nodes[currentPath[i+1]];
@@ -392,7 +420,7 @@ function renderMap(){
  visible.filter(n=>n.type==="room").forEach(n=>{
    el("rect",{x:n.position.x-30,y:n.position.y-16,width:60,height:32,rx:6,fill:"#eaf0fa",stroke:"#8fa6cc","stroke-width":1.5},g);
    const t=el("text",{x:n.position.x,y:n.position.y+4*k,"text-anchor":"middle","font-size":10.5*k,"font-weight":700,fill:"#35517f"},g);
-   t.textContent=n.id==="R1104"?"Library":n.label.replace("Room ","");
+   t.textContent=n.id==="R1104"?"Library":(n.short||n.label.replace("Room ",""));
  });
  visible.filter(n=>n.type!=="room").forEach(n=>{
    const isUser=n.id===userId;let fill=n.type==="junction"?"#ffdc2f":n.type==="stairs"?"#9b83d5":n.type==="entrance"?"#23845c":"#204396";if(isUser)fill="#2789d8";
@@ -472,8 +500,9 @@ function zoomAt(k,cx,cy){
 /* ---------- Route + panel ---------- */
 function openPanel(){document.body.classList.add("panel-open")}
 function closePanel(){document.body.classList.remove("panel-open")}
-function updateRoute(){
+function updateRoute(quiet){
  if(!startId||!endId){toast("Choose a starting point and destination.");return}
+ if(!nodes[startId]||!nodes[endId])return;
  const result=dijkstra(startId,endId);
  if(!result){currentPath=[];currentSteps=[];closePanel();$("routeStatus").textContent="No connected route";toast("No route found. Check the graph connections.");renderMap();return}
  currentPath=result.path;currentSteps=routeSteps(result.path);activeStep=0;
@@ -481,9 +510,9 @@ function updateRoute(){
  $("distanceStat").textContent=result.distance+" m";
  $("timeStat").textContent=Math.max(1,Math.ceil(result.distance/75))+" min";
  $("turnStat").textContent=currentSteps.length;
- currentFloor=nodeFloor(nodes[startId]);
- openPanel();renderSteps();renderMap();
- requestAnimationFrame(fitRoute);
+ if(!quiet){currentFloor=nodeFloor(nodes[startId]);openPanel();}
+ renderSteps();renderMap();
+ if(!quiet)requestAnimationFrame(fitRoute);
 }
 function renderSteps(){
  if(!currentSteps.length)return;const s=currentSteps[activeStep];
@@ -512,8 +541,8 @@ $("routeBtn").onclick=()=>{if(!startId||!endId)return toast("Choose a starting p
 $("swapBtn").onclick=()=>{const a=$("startSearch").value;$("startSearch").value=$("endSearch").value;$("endSearch").value=a;const t=startId;startId=endId;endId=t;
  if(startId===userId&&$("startSearch").value!=="Your location"&&!nodes[startId]?.label)$("startSearch").value="Your location";
  renderMap();tryRoute()};
-$("gpsBtn").onclick=()=>{startId=userId;$("startSearch").value="Your location";toast("Mock GPS position set as your starting point.");renderMap();tryRoute()};
-document.querySelectorAll("[data-quick]").forEach(b=>b.onclick=()=>{endId=b.dataset.quick;enterDirMode();$("endSearch").value=labelFor(endId);$("endSearchSimple").value=labelFor(endId);if(!startId){startId="ENT";$("startSearch").value=labelFor("ENT");}tryRoute();renderMap()});
+$("gpsBtn").onclick=()=>{startWatch();$("startSearch").value="Your location";if(gpsFix){startId=GPS_ID;renderMap();tryRoute()}else{pendingGps=true;toast("Getting your location…")}};
+document.querySelectorAll("[data-quick]").forEach(b=>b.onclick=()=>{endId=b.dataset.quick;enterDirMode();$("endSearch").value=labelFor(endId);$("endSearchSimple").value=labelFor(endId);if(!startId){startId=gpsFix?GPS_ID:"ENT";$("startSearch").value=labelFor(startId);}tryRoute();renderMap()});
 $("prevStep").onclick=()=>goStep(-1);$("nextStep").onclick=()=>goStep(1);
 document.querySelectorAll("#floorBtns button").forEach(b=>b.onclick=()=>{
  currentFloor=b.dataset.floor;renderMap();
@@ -525,10 +554,20 @@ $("devToggle").onclick=()=>$("devPanel").classList.toggle("open");
 $("dismissWelcome").onclick=()=>{$("welcomeModal").classList.add("hidden");try{localStorage.setItem("campusway_seen","1")}catch(e){}};
 try{if(localStorage.getItem("campusway_seen"))$("welcomeModal").classList.add("hidden")}catch(e){}
 
-const svg=$("mapSvg");
-svg.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,view:{...view}};svg.classList.add("dragging");svg.setPointerCapture(e.pointerId)});
-svg.addEventListener("pointermove",e=>{if(!drag)return;const r=svg.getBoundingClientRect();view.x=drag.view.x-(e.clientX-drag.x)*drag.view.w/r.width;view.y=drag.view.y-(e.clientY-drag.y)*drag.view.h/r.height;applyView()});
-svg.addEventListener("pointerup",()=>{drag=null;svg.classList.remove("dragging")});
+const svg=$("mapSvg"),ptrs=new Map();let pinch=null;
+function ptrPair(){const [a,b]=[...ptrs.values()];return{d:Math.hypot(a.x-b.x,a.y-b.y)||1,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2}}
+svg.addEventListener("pointerdown",e=>{ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});try{svg.setPointerCapture(e.pointerId)}catch(_){}
+ if(ptrs.size===1){drag={x:e.clientX,y:e.clientY,view:{...view}};svg.classList.add("dragging")}
+ else if(ptrs.size===2){drag=null;const p=ptrPair();pinch={d:p.d,cx:p.cx,cy:p.cy,view:{...view}}}});
+svg.addEventListener("pointermove",e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});const r=svg.getBoundingClientRect();
+ if(ptrs.size>=2&&pinch){const p=ptrPair(),w=Math.min(3000,Math.max(120,pinch.view.w*pinch.d/p.d)),h=pinch.view.h*w/pinch.view.w;
+  const mx=pinch.view.x+(pinch.cx-r.left)/r.width*pinch.view.w,my=pinch.view.y+(pinch.cy-r.top)/r.height*pinch.view.h;
+  view.w=w;view.h=h;view.x=mx-(p.cx-r.left)/r.width*w;view.y=my-(p.cy-r.top)/r.height*h;applyView();return}
+ if(drag){view.x=drag.view.x-(e.clientX-drag.x)*drag.view.w/r.width;view.y=drag.view.y-(e.clientY-drag.y)*drag.view.h/r.height;applyView()}});
+function ptrEnd(e){ptrs.delete(e.pointerId);pinch=null;
+ if(ptrs.size===1){const q=[...ptrs.values()][0];drag={x:q.x,y:q.y,view:{...view}}}
+ else{drag=null;svg.classList.remove("dragging")}}
+svg.addEventListener("pointerup",ptrEnd);svg.addEventListener("pointercancel",ptrEnd);
 svg.addEventListener("wheel",e=>{e.preventDefault();const r=svg.getBoundingClientRect();zoomAt(e.deltaY>0?1.1:.9,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 window.addEventListener("resize",()=>{currentPath.length?fitRoute():resetView()});
 
@@ -538,7 +577,43 @@ $("addNodeBtn").onclick=()=>{const id=$("newNodeId").value.trim().toUpperCase();
 $("removeNodeBtn").onclick=()=>{const id=selectedNode||$("edgeFrom").value;if(!nodes[id])return toast("Choose a node first.");delete nodes[id];edges=edges.filter(e=>e.from!==id&&e.to!==id);if(startId===id){startId=null;$("startSearch").value=""}if(endId===id){endId=null;$("endSearch").value=""}refreshEdgeSelects();if(startId&&endId)updateRoute();else{currentPath=[];currentSteps=[];closePanel();renderMap()}toast("Node and its connections removed.");};
 $("addEdgeBtn").onclick=()=>{const from=$("edgeFrom").value,to=$("edgeTo").value,w=Number($("edgeWeight").value);if(from===to||!w||w<1)return toast("Choose two different nodes and a valid distance.");const old=edges.find(e=>(e.from===from&&e.to===to)||(e.to===from&&e.from===to));if(old)old.weight=w;else edges.push({from,to,weight:w});if(startId&&endId)updateRoute();toast("Connection saved.");};
 
+/* ---------- Real GPS ---------- */
+// Map is rotated: image TOP = east, LEFT = north. Upper-left = NE corner, lower-right = SW corner.
+const GEO={lat0:13.801222,lon0:100.319906,lat1:13.798896,lon1:100.318283};
+const GPS_ID="ME",M_PER_UNIT=.205;
+let gpsFix=null,gpsWatch=null,pendingGps=false,warnedOut=false;
+function geoToMap(lat,lon){return{x:(GEO.lat0-lat)/(GEO.lat0-GEO.lat1)*MAP_W,y:(GEO.lon0-lon)/(GEO.lon0-GEO.lon1)*MAP_H}}
+function dropGps(){delete nodes[GPS_ID];edges=edges.filter(e=>e.from!==GPS_ID&&e.to!==GPS_ID);gpsFix=null}
+function nearestEdge(p){let best=null;
+ edges.forEach(e=>{const A=nodes[e.from],B=nodes[e.to];if(!A||!B||A.floor!==1||B.floor!==1)return;
+  const ax=A.position.x,ay=A.position.y,dx=B.position.x-ax,dy=B.position.y-ay,l2=dx*dx+dy*dy||1;
+  const t=Math.max(0,Math.min(1,((p.x-ax)*dx+(p.y-ay)*dy)/l2));
+  const d=Math.hypot(p.x-(ax+t*dx),p.y-(ay+t*dy));if(!best||d<best.d)best={e,d}});
+ return best&&best.e}
+function onFix(pos){
+ const c=pos.coords,p=geoToMap(c.latitude,c.longitude);
+ if(p.x<-150||p.x>MAP_W+150||p.y<-150||p.y>MAP_H+150){if(!warnedOut){toast("You appear to be outside the campus map.");warnedOut=true}dropGps();renderMap();return}
+ warnedOut=false;
+ const moved=!gpsFix||Math.hypot(p.x-gpsFix.x,p.y-gpsFix.y)*M_PER_UNIT>2;
+ gpsFix={x:p.x,y:p.y,acc:c.accuracy||20};
+ if(!moved)return;
+ edges=edges.filter(e=>e.from!==GPS_ID&&e.to!==GPS_ID);
+ nodes[GPS_ID]={id:GPS_ID,label:"Your location",type:"junction",building:"1",floor:1,position:{x:p.x,y:p.y,z:0}};
+ const ne=nearestEdge(p);
+ if(ne)[ne.from,ne.to].forEach(id=>{const q=nodes[id].position;edges.push({from:GPS_ID,to:id,weight:Math.max(1,Math.round(Math.hypot(p.x-q.x,p.y-q.y)*.25))})});
+ if(pendingGps){pendingGps=false;startId=GPS_ID;$("startSearch").value="Your location"}
+ renderMap();
+ if(startId===GPS_ID&&endId&&endId!==GPS_ID)updateRoute(true);
+}
+function startWatch(){
+ if(gpsWatch!==null)return;
+ if(!navigator.geolocation){toast("Geolocation isn't supported on this device.");return}
+ gpsWatch=navigator.geolocation.watchPosition(onFix,err=>{pendingGps=false;toast(err.code===1?"Location permission denied.":"Couldn't get your location.")},{enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+}
+startWatch();
+
 refreshEdgeSelects();renderMap();resetView();
 </script>
 </body>
 </html>
+
