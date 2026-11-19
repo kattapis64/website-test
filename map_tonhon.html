@@ -38,7 +38,19 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 #fl{position:absolute;left:8px;top:50%;transform:translateY(-50%);flex-direction:column;overflow:hidden;z-index:3;display:none}
 #fl button{border:0;background:transparent;width:38px;height:36px;font-weight:600;border-bottom:1px solid var(--line)}#fl .on{background:#1a73e822;color:var(--blue)}
 #devBtn{position:absolute;left:8px;top:8px;z-index:3;border:0;border-radius:16px;background:var(--card);box-shadow:var(--sh);padding:5px 11px;font-size:11px;font-weight:700;color:var(--mut)}
-#info{padding:12px 14px;display:flex;flex-direction:column;gap:12px;z-index:2}
+#iw{position:relative;flex:none;z-index:2}
+#info{position:absolute;left:0;right:0;bottom:0;overflow:hidden;display:flex;flex-direction:column;transition:height .3s cubic-bezier(.2,.8,.2,1)}#info.dr{transition:none}
+#hd{flex:none;display:flex;flex-direction:column;gap:12px;padding:12px 14px}#info.has #hd{padding-top:0;touch-action:none;user-select:none}
+#txt:empty{display:none}
+.notch{display:none;height:22px;cursor:pointer;position:relative}#info.has .notch{display:block}
+.notch::before{content:"";position:absolute;left:50%;top:9px;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:#9aa0a688}
+#more{flex:1;min-height:0;overflow:auto;padding:0 14px 18px;visibility:hidden;overscroll-behavior:contain}#info.open #more{visibility:visible}
+.gal{position:relative}
+.gs{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}.gs::-webkit-scrollbar{display:none}
+.gs img{flex:0 0 100%;min-width:0;aspect-ratio:16/9;object-fit:cover;border-radius:12px;background:#8882;scroll-snap-align:start}
+@media(min-width:700px){.gs img{flex-basis:calc(50% - 5px);aspect-ratio:16/10;max-height:220px}}
+.gb{position:absolute;top:50%;width:36px;height:36px;margin-top:-18px;border:0;border-radius:50%;background:#000a;color:#fff;font-size:24px;line-height:1;display:grid;place-items:center;padding:0 0 3px}.gb.p{left:8px}.gb.nx{right:8px}.gb[hidden]{display:none}
+#more h4{margin:14px 0 4px;font-size:15px;font-weight:500}#more p{margin:0;color:var(--mut);font-size:14px;white-space:pre-line}
 #txt h3{margin:0;font-size:17px;font-weight:500}#txt p{margin:3px 0 0;color:var(--mut);font-size:13px}
 .go{border:0;border-radius:24px;background:var(--blue);color:#fff;padding:12px 18px;font-weight:500;font-size:15px;width:100%}:root:not([data-theme="light"]) .go{color:#10151c}
 .lnk{border:0;background:none;color:var(--blue);padding:0;font-weight:500}
@@ -50,12 +62,12 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 .mo h2{margin:0 0 8px;font-size:18px;font-weight:500}.mo p{color:var(--mut);margin:6px 0}
 .mo label.t{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .mo .close{float:right;border:0;background:none;font-size:18px;color:var(--mut)}
-.st{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.st small{display:block;color:var(--mut)}
+.st{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.st small{display:block;color:var(--mut)}.st b{margin-left:auto;flex:none;font-weight:500;color:var(--blue);white-space:nowrap}
 .st i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font:600 11px/24px sans-serif;text-align:center}
 #dev{position:absolute;right:8px;top:8px;width:min(272px,calc(100% - 64px));max-height:calc(100% - 16px);overflow:auto;z-index:4;padding:10px;display:none;font-size:12px}#dev.open{display:block}
 .seg{display:flex;gap:4px;margin:8px 0}.seg button,.sm{padding:6px 8px;border:1px solid var(--line);background:transparent;border-radius:8px;font-size:12px}.seg button{flex:1}.seg .on{background:var(--blue);color:#fff;border-color:var(--blue)}
 #dev label{display:block;margin-top:6px;color:var(--mut)}#dev input,#dev select,#dev textarea{width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:transparent}
-#dev .bt{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}#js{height:70px;font:11px monospace}
+#dev input[type=checkbox]{width:auto!important}#dev .bt{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}#js{height:70px;font:11px monospace}
 #toast{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);background:#323232;color:#fff;padding:9px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60;font-size:13px}#toast.on{opacity:1}
 </style></head><body>
 <div id="app">
@@ -76,9 +88,9 @@ button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
    <p style="color:var(--mut);margin:6px 0 0">Edits autosave in this browser. Export to keep them.</p>
   </div>
  </div>
- <div class="card" id="info"><div id="txt"></div>
+ <div id="iw"><div class="card" id="info"><div id="hd"><div class="notch" id="notch" role="button" aria-label="Show more details"></div><div id="txt"></div>
   <div class="row"><div class="g"><button class="rb" id="zi" title="Zoom in">+</button><button class="rb" id="zo" title="Zoom out">−</button></div>
-  <div class="g"><button class="rb" id="ibtn" title="About">ⓘ</button><button class="rb" id="sbtn" title="Settings">⚙</button></div></div></div>
+  <div class="g"><button class="rb" id="ibtn" title="About">ⓘ</button><button class="rb" id="sbtn" title="Settings">⚙</button></div></div></div><div id="more"></div></div></div>
 </div>
 <div class="mb" id="m-info"><div class="card mo"><button class="close" data-x>✕</button><h2>About this map</h2><p>Pick a starting point and a destination from the search bars. Open a building, then a floor, then tap a room. The shortest walking route is drawn on the map.</p><p>Drag to pan, scroll or pinch to zoom, and use the floor buttons on the left when the building has several floors.</p></div></div>
 <div class="mb" id="m-set"><div class="card mo"><button class="close" data-x>✕</button><h2>Settings</h2>
@@ -93,11 +105,11 @@ const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',W=1280,H
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let G={nodes:[],edges:[]},S={s:null,e:null,floor:1,path:[],steps:[],dist:0,labels:true,walk:true,mode:'sel',sel:null,edgeSel:null,pend:null},active=null;
 const svg=$('svg'),fg=$('fg'),N=id=>G.nodes.find(n=>n.id===id);
-const places=()=>G.nodes.filter(n=>n.type!=='junction'&&n.type!=='stairs'&&n.label);
-const bL=b=>b?(/^\d+$/.test(b)?'Building '+b:b):'Other',loc=n=>(n.building?bL(n.building)+' · ':'')+'Floor '+n.floor;
+const places=()=>G.nodes.filter(n=>n.label&&(n.type==='room'||n.type==='building'||n.type==='landmark'||n.type==='entrance'&&!(N(n.parent)&&['room','building'].includes(N(n.parent).type))));
+const bL=b=>{if(!b)return'Other';const bn=G.nodes.find(n=>n.type==='building'&&n.building===b&&n.label);return bn?bn.label:/^\d+$/.test(b)?'Building '+b:b},loc=n=>n.type==='building'?'Building':n.type==='landmark'?'Landmark · Floor '+n.floor:(n.building?bL(n.building)+' · ':'')+'Floor '+n.floor;
 const devOn=()=>$('dev').classList.contains('open');
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
-function norm(d){return{nodes:(d.nodes||[]).map(n=>({id:String(n.id),label:n.label||'',type:n.type||'room',building:n.building||'',floor:+n.floor||1,x:+n.x||0,y:+n.y||0,note:n.note||''})),edges:(d.edges||[]).map(e=>({from:e.from,to:e.to,weight:+e.weight||1}))}}
+function norm(d){return{nodes:(d.nodes||[]).map(n=>({id:String(n.id),label:n.label||'',type:n.type||'room',building:n.building||'',parent:n.parent||'',images:Array.isArray(n.images)?n.images.map(String).filter(Boolean):n.image?[String(n.image)]:[],desc:n.desc||'',anyEntry:!!n.anyEntry,hideDot:n.hideDot===undefined?(n.type==='junction'):!!n.hideDot,floor:+n.floor||1,x:+n.x||0,y:+n.y||0,note:n.note||''})),edges:(d.edges||[]).map(e=>({from:e.from,to:e.to,weight:+e.weight||1}))}}
 async function load(){let d=JSON.parse($('gd').textContent);
  try{const r=await fetch('data.json',{cache:'no-store'});if(r.ok)d=await r.json()}catch(e){}
  try{const l=localStorage.getItem(KEY);if(l)d=JSON.parse(l)}catch(e){}
@@ -106,26 +118,64 @@ function commit(){try{localStorage.setItem(KEY,JSON.stringify(G))}catch(e){}refr
 function refresh(fit){['s','e'].forEach(k=>{if(S[k]&&!N(S[k]))S[k]=null});if(S.sel&&!N(S.sel))S.sel=null;
  if(S.edgeSel!=null&&!G.edges[S.edgeSel])S.edgeSel=null;setInputs();floors();update(fit);devUI()}
 /* ---------- routing ---------- */
-function dijk(a,b){const adj={};G.nodes.forEach(n=>adj[n.id]=[]);G.edges.forEach(e=>{if(adj[e.from]&&adj[e.to]){adj[e.from].push([e.to,e.weight]);adj[e.to].push([e.from,e.weight])}});
- const d={[a]:0},pv={},q=new Set([a]),done=new Set();
- while(q.size){let u=null;q.forEach(k=>{if(u===null||d[k]<d[u])u=k});q.delete(u);if(u===b)break;done.add(u);
-  adj[u].forEach(([v,w])=>{if(!done.has(v)&&(d[v]===undefined||d[u]+w<d[v])){d[v]=d[u]+w;pv[v]=u;q.add(v)}})}
- if(d[b]===undefined)return null;const p=[];for(let c=b;c!==undefined;c=pv[c])p.push(c);return{p:p.reverse(),d:Math.round(d[b])}}
-function mkSteps(p){const o=[];p.forEach((id,i)=>{const n=N(id),a=N(p[i-1]),b=N(p[i+1]);
- if(!i)o.push({t:'Start at '+n.label,d:loc(n)});
- else if(!b)o.push({t:'Arrive at '+n.label,d:loc(n)});
- else if(b.floor!==n.floor)o.push({t:(b.floor>n.floor?'Go up':'Go down')+' to floor '+b.floor,d:'Via '+(n.label||'stairs')});
- else if(a.floor===n.floor){const u=[n.x-a.x,n.y-a.y],v=[b.x-n.x,b.y-n.y],c=u[0]*v[1]-u[1]*v[0];
-  if(Math.abs(c)>.5*Math.hypot(...u)*Math.hypot(...v))o.push({t:'Turn '+(c>0?'right':'left')+(n.label?' at '+n.label:''),d:''})}});return o}
+/* A place (room/building) is reached through its entrance nodes.
+   room -> its own entrances, else its building's entrances
+   building -> its own entrances, else the entrances of its rooms
+   fallback -> the node itself (old data without entrances) */
+const entOf=id=>G.nodes.filter(x=>x.type==='entrance'&&x.parent===id).map(x=>x.id);
+function nearJ(b){const J=G.nodes.filter(x=>x.type==='junction'),g=J.filter(x=>x.floor===1),P=g.length?g:J;let best=null,bd=1e9;P.forEach(x=>{const d=Math.hypot(x.x-b.x,x.y-b.y);if(d<bd){bd=d;best=x}});return best?[best.id]:[]}
+function ends(id){const n=N(id);if(!n)return[];let r;
+ if(n.type==='building'&&n.anyEntry&&(r=nearJ(n)).length)return r;
+ r=entOf(id);if(r.length)return r;
+ if(n.type==='room'){const b=G.nodes.find(x=>x.type==='building'&&x.building===n.building&&n.building);if(b&&(r=b.anyEntry?nearJ(b):entOf(b.id)).length)return r}
+ if(n.type==='building'){const rs=G.nodes.filter(x=>x.type==='room'&&x.building===n.building);r=[].concat(...rs.map(x=>entOf(x.id)));if(r.length)return r}
+ return[id]}
+/* multi-source / multi-target Dijkstra: finds the closest entrance pair */
+function dijk(A,B){const adj={};G.nodes.forEach(n=>adj[n.id]=[]);G.edges.forEach(e=>{if(adj[e.from]&&adj[e.to]){adj[e.from].push([e.to,e.weight]);adj[e.to].push([e.from,e.weight])}});
+  const d={},pv={},q=new Set(),done=new Set(),tg=new Set(B);let end=null;
+  A.forEach(a=>{d[a]=0;q.add(a)});
+  while(q.size){let u=null;q.forEach(k=>{if(u===null||d[k]<d[u])u=k});q.delete(u);if(tg.has(u)){end=u;break}done.add(u);
+   adj[u].forEach(([v,w])=>{if(!done.has(v)&&(d[v]===undefined||d[u]+w<d[v])){d[v]=d[u]+w;pv[v]=u;q.add(v)}})}
+  if(end===null)return null;const p=[];for(let c=end;c!==undefined;c=pv[c])p.push(c);return{p:p.reverse(),d:Math.round(d[end])}}
+function mkSteps(p){const o=[],s=N(S.s),e=N(S.e),f=N(p[0]),l=N(p[p.length-1]),cum=[0];
+  p.forEach((id,i)=>{if(i)cum[i]=cum[i-1]+Math.min(...G.edges.filter(x=>x.from===p[i-1]&&x.to===id||x.to===p[i-1]&&x.from===id).map(x=>x.weight))});
+  let last=0;const dm=i=>{const d=Math.round(cum[i]-cum[last]);last=i;return d};
+  o.push({t:'Start at '+s.label,d:loc(s)+(f!==s&&f.label?' · exit via '+f.label:'')});
+  p.forEach((id,i)=>{if(!i||i===p.length-1)return;const n=N(id),a=N(p[i-1]),b=N(p[i+1]);
+   if(b.floor!==n.floor)o.push({t:(b.floor>n.floor?'Go up':'Go down')+' to floor '+b.floor,d:'Via '+(n.label||'stairs'),m:dm(i)});
+   else if(a.floor===n.floor){const u=[n.x-a.x,n.y-a.y],v=[b.x-n.x,b.y-n.y],c=u[0]*v[1]-u[1]*v[0];
+    if(Math.abs(c)>.5*Math.hypot(...u)*Math.hypot(...v))o.push({t:'Turn '+(c>0?'right':'left')+(n.label?' at '+n.label:''),d:'',m:dm(i)})}});
+  o.push({t:'Arrive at '+e.label,d:loc(e)+(l!==e&&l.label?' · via '+l.label:''),m:dm(p.length-1)});return o}
 function update(fit=true){S.path=[];S.steps=[];S.msg='';
  if(S.s&&S.e){if(S.s===S.e)S.msg='Start and destination are the same place.';
-  else{const r=dijk(S.s,S.e);if(r){S.path=r.p;S.dist=r.d;S.steps=mkSteps(r.p);if(fit){S.floor=N(S.s).floor;floors()}}else S.msg='No connected route found. Check the nodes and edges.'}}
+  else{const r=dijk(ends(S.s),ends(S.e));if(r){S.path=r.p;S.dist=r.d;S.steps=mkSteps(r.p);if(fit){S.floor=N(r.p[0]).floor;floors()}}else S.msg='No connected route found. Check the nodes and edges.'}}
  info();apply();if(fit&&S.path.length)fitRoute()}
+const imgList=n=>n.images&&n.images.length?n.images:[0,1,2].map(i=>'https://picsum.photos/seed/'+encodeURIComponent(n.id+i)+'/800/500');
+function galUpd(){const m=$('more'),g=m.querySelector('.gs');if(!g)return;if(!g.children.length){g.parentNode.remove();return}
+  const p=m.querySelector('.gb.p'),x=m.querySelector('.gb.nx');p.hidden=g.scrollLeft<4;x.hidden=g.scrollLeft+g.clientWidth>=g.scrollWidth-4}
+$('more').addEventListener('click',e=>{const b=e.target.closest('.gb');if(!b)return;const g=$('more').querySelector('.gs'),im=g.querySelector('img');if(!im)return;
+  g.scrollBy({left:(b.classList.contains('p')?-1:1)*(im.offsetWidth+10),behavior:'smooth'})});
 function info(){const t=$('txt'),n=S.e&&N(S.e);
- if(!(S.s&&S.e)){const m=!S.s&&!S.e?'starting point and destination':!S.s?'starting point':'destination';
-  t.innerHTML=`<button class="go" id="goB">Start navigating</button><p style="text-align:center">Choose a ${m} first.</p>`}
- else if(S.msg)t.innerHTML=`<h3>${esc(n.label)}</h3><p>${esc(S.msg)}</p>`;
- else t.innerHTML=`<h3>${esc(n.label)}</h3><p>Located on floor ${n.floor}${n.building?' of '+esc(bL(n.building)):''}${n.note?' · '+esc(n.note):''}</p><p>${S.dist} m · about ${Math.max(1,Math.ceil(S.dist/75))} min walk · <button class="lnk" id="stp">View steps</button></p>`}
+  if(!n)t.innerHTML='';
+  else if(S.msg)t.innerHTML=`<h3>${esc(n.label)}</h3><p>${esc(S.msg)}</p>`;
+  else t.innerHTML=`<h3>${esc(n.label)}</h3><p>${n.type==='building'?'Building':n.type==='landmark'?'Landmark · floor '+n.floor:'Located on floor '+n.floor+(n.building?' of '+esc(bL(n.building)):'')}${n.note?' · '+esc(n.note):''}</p>`+(S.s&&S.path.length?`<p>${S.dist} m · about ${Math.max(1,Math.ceil(S.dist/75))} min walk · <button class="lnk" id="stp">View steps</button></p>`:'');
+  const m=$('more'),L=n?imgList(n):[],k=n?n.id+'|'+L.join(',')+'|'+n.desc+'|'+n.label:'';
+  if(m.dataset.k!==k){m.dataset.k=k;m.scrollTop=0;
+   m.innerHTML=n?(L.length?`<div class="gal"><div class="gs">${L.map(u=>`<img src="${esc(u)}" alt="${esc(n.label)}" loading="lazy" draggable="false" onerror="this.remove();galUpd()">`).join('')}</div><button class="gb p" aria-label="Previous image" hidden>‹</button><button class="gb nx" aria-label="Next image" hidden>›</button></div>`:'')+`<h4>About this place</h4><p>${esc(n.desc||'No detailed description has been added for this place yet.')}</p>`:'';
+   const g=m.querySelector('.gs');if(g)g.addEventListener('scroll',galUpd,{passive:true})}
+  sheet()}
+/* ---------- bottom sheet (short / expanded) ---------- */
+const SH={open:false,last:null,drag:null},shC=()=>$('hd').offsetHeight,shX=()=>Math.max(shC()+160,Math.round(innerHeight*.66));
+function sheet(){const i=$('info'),has=!!(S.e&&N(S.e));if(S.e!==SH.last){SH.open=false;SH.last=S.e}if(!has)SH.open=false;
+  i.classList.toggle('has',has);i.classList.toggle('open',SH.open);galUpd();$('iw').style.height=shC()+'px';i.style.height=(SH.open?shX():shC())+'px'}
+$('hd').addEventListener('pointerdown',e=>{if(!$('info').classList.contains('has')||e.target.closest('button'))return;
+  SH.drag={y:e.clientY,h:$('info').offsetHeight,mv:false,id:e.pointerId,notch:!!e.target.closest('#notch')};$('hd').setPointerCapture(e.pointerId);$('info').classList.add('dr')});
+$('hd').addEventListener('pointermove',e=>{const d=SH.drag;if(!d||d.id!==e.pointerId)return;const dy=d.y-e.clientY;if(Math.abs(dy)>4)d.mv=true;
+  if(d.mv)$('info').style.height=Math.min(shX(),Math.max(shC(),d.h+dy))+'px'});
+function endDrag(e,cancel){const d=SH.drag;if(!d||d.id!==e.pointerId)return;SH.drag=null;$('info').classList.remove('dr');const dy=d.y-e.clientY;
+  if(!cancel){if(d.mv)SH.open=Math.abs(dy)>24?dy>0:$('info').offsetHeight>(shC()+shX())/2;else if(d.notch)SH.open=!SH.open}sheet()}
+$('hd').addEventListener('pointerup',e=>endDrag(e));$('hd').addEventListener('pointercancel',e=>endDrag(e,true));
+new ResizeObserver(()=>sheet()).observe($('hd'));addEventListener('resize',()=>{sheet();galUpd()});
 /* ---------- search dropdown ---------- */
 const inp=w=>$(w==='s'?'si':'ei');
 function setInputs(){$('si').value=S.s&&N(S.s)?N(S.s).label:'';$('ei').value=S.e&&N(S.e)?N(S.e).label:''}
@@ -135,8 +185,9 @@ function buildDD(){const q=inp(active).value.trim().toLowerCase(),cur=S[active],
  if(!P.length)h='<div class="emp">No places yet. Use DEV to add nodes.</div>';
  else if(q&&!same){const m=P.filter(n=>(n.label+' '+loc(n)).toLowerCase().includes(q));
   h=m.length?m.map(n=>`<button class="opt" data-id="${esc(n.id)}"><span>📍</span><span>${esc(n.label)}<small>${esc(loc(n))}</small></span></button>`).join(''):'<div class="emp">No matches</div>'}
- else h=[...new Set(P.map(n=>n.building))].map((b,i)=>{const fs=[...new Set(P.filter(n=>n.building===b).map(n=>n.floor))].sort((a,c)=>a-c);
-  return `<div class="acc${i?'':' open'}"><button class="ah"><span class="chev">›</span>${esc(bL(b))}</button><div class="ab"><div>${fs.map((f,j)=>`<div class="acc sub${j?'':' open'}"><button class="ah"><span class="chev">›</span>Floor ${f}</button><div class="ab"><div><div class="chips">${P.filter(n=>n.building===b&&n.floor===f).map(n=>`<button class="chip" data-id="${esc(n.id)}">${esc(n.label)}</button>`).join('')}</div></div></div></div>`).join('')}</div></div></div>`}).join('');
+ else{const PB=P;h=[...new Set(PB.map(n=>n.building))].map((b,i)=>{const R=PB.filter(n=>n.building===b&&n.type!=='building'),bn=PB.find(n=>n.building===b&&n.type==='building'),fs=[...new Set(R.map(n=>n.floor))].sort((a,c)=>a-c);
+  if(bn&&!R.length)return `<button class="ah" data-id="${esc(bn.id)}"><span class="chev" style="visibility:hidden">›</span>${esc(bn.label)}</button>`;
+  return `<div class="acc${i?'':' open'}"><button class="ah"><span class="chev">›</span>${esc(bL(b))}</button><div class="ab"><div>${bn?`<div class="chips"><button class="chip" data-id="${esc(bn.id)}">Whole building</button></div>`:''}${fs.map((f,j)=>`<div class="acc sub${j?'':' open'}"><button class="ah"><span class="chev">›</span>Floor ${f}</button><div class="ab"><div><div class="chips">${R.filter(n=>n.floor===f).map(n=>`<button class="chip" data-id="${esc(n.id)}">${esc(n.label)}</button>`).join('')}</div></div></div></div>`).join('')}</div></div></div>`}).join('')}
  $('ddb').innerHTML=h}
 function pick(w,id){S[w]=id;setInputs();closeDD();update();if(w==='s'&&!S.e)setTimeout(()=>{$('ei').focus()},60)}
 $('ddb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
@@ -147,8 +198,7 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest('#top'))closeDD
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDD();document.querySelectorAll('.mb.open').forEach(m=>m.classList.remove('open'))}});
 $('swap').onclick=()=>{[S.s,S.e]=[S.e,S.s];setInputs();update()};
 $('txt').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
- if(b.id==='goB'){const w=!S.s?'s':'e';inp(w).focus()}
- if(b.id==='stp'){$('stl').innerHTML=S.steps.map((s,i)=>`<div class="st"><i>${i+1}</i><div>${esc(s.t)}<small>${esc(s.d)}</small></div></div>`).join('');$('m-stp').classList.add('open')}});
+  if(b.id==='stp'){$('stl').innerHTML=S.steps.map((s,i)=>`<div class="st"><i>${i+1}</i><div>${esc(s.t)}<small>${esc(s.d)}</small></div>${s.m!=null?`<b>${s.m} m</b>`:''}</div>`).join('');$('m-stp').classList.add('open')}});
 /* ---------- view (pan / zoom with limits) ---------- */
 let V={cx:W/2,cy:H/2,w:1e5},raf=0;
 function dims(){const w=svg.clientWidth||1,h=svg.clientHeight||1;return{w,h,fit:Math.max(W,H*w/h)}}
@@ -177,41 +227,56 @@ function click(t,p){const id=t.dataset&&t.dataset.id,ei=t.dataset&&t.dataset.e;
   if(S.mode==='add'){if(!id)addNode(p);return}
   if(S.mode==='con'){if(id){if(!S.pend)S.pend=id;else{if(S.pend!==id)addEdge(S.pend,id);S.pend=null}draw();devUI()}return}
   S.sel=id||null;S.edgeSel=!id&&ei!==undefined?+ei:null;devUI();draw();return}
- if(id&&N(id).type!=='junction')pick('e',id)}
+ if(!id)return;const n=N(id),pp=n.type==='entrance'&&N(n.parent);const t2=pp&&places().includes(pp)?pp:places().includes(n)?n:null;if(t2)pick('e',t2.id)}
 /* ---------- drawing ---------- */
-function add(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||fg).appendChild(e);return e}
-const COL={room:'#204396',junction:'#ffdc2f',stairs:'#2e7d32',entrance:'#8e24aa'};
+function add(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)if(a[k]!=null)e.setAttribute(k,a[k]);(p||fg).appendChild(e);return e}
+const COL={room:'#204396',junction:'#ffdc2f',stairs:'#2e7d32',entrance:'#8e24aa',building:'#e65100',landmark:'#00897b'};
 function draw(){fg.innerHTML='';const px=V.w/(svg.clientWidth||1),f=S.floor,dev=devOn();
  if(S.walk||dev)G.edges.forEach((e,i)=>{const a=N(e.from),b=N(e.to);if(!a||!b||a.floor!==f||b.floor!==f)return;const c={x1:a.x,y1:a.y,x2:b.x,y2:b.y};
   add('line',{...c,stroke:S.edgeSel===i?'#d93025':'#fff','stroke-opacity':.85,'stroke-width':5*px,'stroke-linecap':'round'});
   if(dev)add('line',{...c,'data-e':i,stroke:'transparent','stroke-width':16*px})});
  let d='';S.path.forEach((id,i)=>{const n=N(id),p=N(S.path[i-1]);if(n.floor===f)d+=(p&&p.floor===f?'L':'M')+n.x+' '+n.y+' '});
  if(d){add('path',{d,fill:'none',stroke:'#fff','stroke-width':10*px,'stroke-linecap':'round','stroke-linejoin':'round'});add('path',{d,fill:'none',stroke:'#1a73e8','stroke-width':6*px,'stroke-linecap':'round','stroke-linejoin':'round'})}
- G.nodes.filter(n=>n.floor===f).forEach(n=>{const end=n.id===S.s||n.id===S.e,show=dev||end||(S.labels&&n.type!=='junction');if(!show)return;
+  if(S.path.length)[[S.s,S.path[0]],[S.e,S.path[S.path.length-1]]].forEach(([pl,en])=>{const A=N(pl),B=N(en);if(A&&B&&A!==B&&(A.floor===f||A.type==='building')&&B.floor===f)add('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'#1a73e8','stroke-width':3*px,'stroke-dasharray':`${6*px} ${5*px}`,'stroke-linecap':'round'})});
+ G.nodes.filter(n=>n.floor===f||n.type==='building').forEach(n=>{const end=n.id===S.s||n.id===S.e,show=dev||end||(S.labels&&!n.hideDot);if(!show)return;
   const r=(end?9:dev?7:5)*px,c=add('circle',{cx:n.x,cy:n.y,r,'data-id':n.id,fill:n.id===S.e?'#d93025':n.id===S.s?'#fff':COL[n.type]||'#204396',stroke:n.id===S.pend?'#ff9800':n.id===S.sel&&dev?'#d93025':n.id===S.s?'#1a73e8':'#fff','stroke-width':(end||n.id===S.sel||n.id===S.pend?3:1.5)*px});
-  if(n.label&&(end||px<1.1||dev&&px<1.6))add('text',{x:n.x,y:n.y-(12*px),'text-anchor':'middle','font-size':12*px,'font-weight':700,fill:'#204396',stroke:'#fff','stroke-width':3*px,'paint-order':'stroke','pointer-events':'none'}).textContent=n.label})}
-function floors(){const fs=[...new Set([1,S.floor,...G.nodes.map(n=>n.floor)])].sort((a,b)=>b-a),el=$('fl');el.style.display=fs.length>1||devOn()?'flex':'none';
+  if(n.label&&n.type!=='entrance'&&(end||px<1.1||dev&&px<1.6)){const rt=mq.matches,tx=rt?n.x-14*px:n.x,ty=rt?n.y:n.y-12*px;add('text',{x:tx,y:ty,transform:rt?`rotate(-90 ${tx} ${ty})`:null,'text-anchor':'middle','font-size':12*px,'font-weight':700,fill:'#204396',stroke:'#fff','stroke-width':3*px,'paint-order':'stroke','pointer-events':'none'}).textContent=n.label}})}
+function floors(){const fs=[...new Set([1,S.floor,...G.nodes.filter(n=>n.type!=='building').map(n=>n.floor)])].sort((a,b)=>b-a),el=$('fl');el.style.display=fs.length>1||devOn()?'flex':'none';
  el.innerHTML=fs.map(f=>`<button data-f="${f}" class="${f===S.floor?'on':''}">${f}</button>`).join('')+(devOn()?'<button data-f="+">+</button>':'')}
-$('fl').addEventListener('click',e=>{const f=e.target.dataset.f;if(!f)return;S.floor=f==='+'?Math.max(1,...G.nodes.map(n=>n.floor),S.floor)+1:+f;floors();draw()});
+$('fl').addEventListener('click',e=>{const f=e.target.dataset.f;if(!f)return;S.floor=f==='+'?Math.max(1,...G.nodes.filter(n=>n.type!=='building').map(n=>n.floor),S.floor)+1:+f;floors();draw()});
 /* ---------- developer tools ---------- */
 function addNode(p){let i=G.nodes.length+1;while(N('N'+i))i++;const l=G.nodes[G.nodes.length-1];
  G.nodes.push({id:'N'+i,label:'New place',type:'room',building:l?l.building:'',floor:S.floor,x:Math.round(p.x),y:Math.round(p.y),note:''});S.sel='N'+i;S.mode='sel';commit()}
 function addEdge(a,b){if(G.edges.some(e=>e.from===a&&e.to===b||e.from===b&&e.to===a))return toast('Edge already exists');const A=N(a),B=N(b);
  G.edges.push({from:a,to:b,weight:A.floor!==B.floor?8:Math.max(1,Math.round(Math.hypot(A.x-B.x,A.y-B.y)*.1))});commit()}
+const chk=(f,l,v)=>`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-f="${f}"${v?' checked':''}>${l}</label>`;
+function nx(n,fld){const bk=[...new Set(G.nodes.filter(x=>x.type==='building'&&x.building).map(x=>x.building))];let h='';
+  if(n.type==='junction'||n.type==='entrance')h+=chk('hideDot','Hide dot on map',n.hideDot);
+  if(n.type==='building')h+=chk('anyEntry','Enter from any direction (route ends at the nearest junction)',n.anyEntry);
+  if(n.type==='entrance')h+=`<label>Belongs to (room or building)<select data-f="parent"><option value="">(none)</option>${G.nodes.filter(x=>x.type==='room'||x.type==='building').map(x=>`<option value="${esc(x.id)}"${x.id===n.parent?' selected':''}>${esc((x.label||x.id)+' · '+x.type)}</option>`).join('')}</select></label>`;
+  if(n.type!=='building'&&bk.length){const l=n.building&&!bk.includes(n.building)?[...bk,n.building]:bk;
+   h+=`<label>Building<select data-f="building"><option value="">(none)</option>${l.map(k=>`<option value="${esc(k)}"${k===n.building?' selected':''}>${esc(bL(k))} (key ${esc(k)})</option>`).join('')}</select></label>`}
+  else h+=fld('building',n.type==='building'?'Building key (rooms pick this building by it)':'Building (add a building node to get a dropdown)',n.building);return h}
+const nxc=n=>n.type==='room'||n.type==='building'?`<p style="color:var(--mut);margin:6px 0 0">Entrances: ${entOf(n.id).length}</p>`:'';
+function issues(){const o=[],bk=new Set(G.nodes.filter(n=>n.type==='building').map(n=>n.building));
+  G.nodes.forEach(n=>{const nm=n.label||n.id;
+   if(n.type==='landmark'&&!G.edges.some(x=>x.from===n.id||x.to===n.id))o.push(nm+': landmark is not connected to a walkway');if(n.type==='building'&&(!n.building||G.nodes.some(x=>x!==n&&x.type==='building'&&x.building===n.building)))o.push(nm+': building key is empty or shared with another building');if(n.type==='room'){if(!n.building||!bk.has(n.building))o.push(nm+': room has no building');if(!entOf(n.id).length)o.push(nm+': room has no entrance')}
+   if(n.type==='entrance'){const p=N(n.parent);if(!p||p.type!=='room'&&p.type!=='building')o.push(nm+': entrance has no room/building')}});return o}
 function devUI(){document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
  const n=S.sel&&N(S.sel),e=S.edgeSel!=null&&G.edges[S.edgeSel],fld=(f,l,v,t='text')=>`<label>${l}<input type="${t}" data-f="${f}" value="${esc(v)}"></label>`;let h='';
- if(n&&S.mode==='sel')h=`<b>Node</b>${fld('id','ID',n.id)}${fld('label','Label (shown in search)',n.label)}<label>Type<select data-f="type">${Object.keys(COL).map(t=>`<option${t===n.type?' selected':''}>${t}</option>`).join('')}</select></label>${fld('building','Building',n.building)}${fld('floor','Floor',n.floor,'number')}${fld('note','Info note (e.g. above the cafeteria)',n.note)}<div class="bt"><button class="sm" id="delN">Delete node</button></div>`;
+ if(n&&S.mode==='sel')h=`<b>Node</b>${fld('id','ID',n.id)}${fld('label','Label (shown in search)',n.label)}<label>Type<select data-f="type">${Object.keys(COL).map(t=>`<option${t===n.type?' selected':''}>${t}</option>`).join('')}</select></label>${nx(n,fld)}${n.type==='building'?'':fld('floor','Floor',n.floor,'number')}${fld('note','Info note (e.g. above the cafeteria)',n.note)}${n.type==='room'||n.type==='building'||n.type==='landmark'?`<label>Image URLs (one per line, blank = placeholders)<textarea data-f=\"images\" rows=\"3\">${esc((n.images||[]).join('\n'))}</textarea></label>`+`<label>Description (shown when the sheet is pulled up)<textarea data-f="desc" rows="3">${esc(n.desc)}</textarea></label>`:''}${nxc(n)}<div class="bt"><button class="sm" id="delN">Delete node</button></div>`;
  else if(e&&S.mode==='sel')h=`<b>Edge ${esc(e.from)} ↔ ${esc(e.to)}</b>${fld('weight','Distance (m)',e.weight,'number')}<div class="bt"><button class="sm" id="delE">Delete edge</button></div>`;
  else h='<p style="color:var(--mut)">'+({sel:'Tap a node or walkway to edit it. Drag a node to move it.',add:'Tap the map to place a node on floor '+S.floor+'.',con:S.pend?'Now tap the second node.':'Tap two nodes to connect them.'})[S.mode]+'</p>';
- $('df').innerHTML=h;$('cnt').textContent=`${G.nodes.length} nodes · ${G.edges.length} edges`}
+ $('df').innerHTML=h;const is=issues();$('cnt').innerHTML=`${G.nodes.length} nodes · ${G.edges.length} edges`+(is.length?'<br>⚠ '+is.slice(0,6).map(esc).join('<br>⚠ ')+(is.length>6?'<br>…and '+(is.length-6)+' more':''):'')}
 $('dev').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.m){S.mode=b.dataset.m;S.pend=null;devUI();draw()}
- if(b.id==='delN'){G.nodes=G.nodes.filter(n=>n.id!==S.sel);G.edges=G.edges.filter(x=>x.from!==S.sel&&x.to!==S.sel);S.sel=null;commit()}
+ if(b.id==='delN'){G.nodes=G.nodes.filter(n=>n.id!==S.sel);G.edges=G.edges.filter(x=>x.from!==S.sel&&x.to!==S.sel);G.nodes.forEach(x=>{if(x.parent===S.sel)x.parent=''});S.sel=null;commit()}
  if(b.id==='delE'){G.edges.splice(S.edgeSel,1);S.edgeSel=null;commit()}});
-$('df').addEventListener('change',e=>{const f=e.target.dataset.f;if(!f)return;const v=e.target.value;
+$('df').addEventListener('change',e=>{const f=e.target.dataset.f;if(!f)return;const v=e.target.type==='checkbox'?e.target.checked:e.target.value;
  if(S.mode==='sel'&&S.edgeSel!=null&&f==='weight')G.edges[S.edgeSel].weight=Math.max(1,+v||1);
  else{const n=N(S.sel);if(f==='id'){const k=v.trim();if(!k||N(k)){e.target.value=n.id;return toast('ID must be unique')}
-  G.edges.forEach(x=>{if(x.from===n.id)x.from=k;if(x.to===n.id)x.to=k});['s','e'].forEach(q=>{if(S[q]===n.id)S[q]=k});n.id=k;S.sel=k}else n[f]=f==='floor'?+v||1:v}
+  G.edges.forEach(x=>{if(x.from===n.id)x.from=k;if(x.to===n.id)x.to=k});G.nodes.forEach(x=>{if(x.parent===n.id)x.parent=k});['s','e'].forEach(q=>{if(S[q]===n.id)S[q]=k});n.id=k;S.sel=k}else if(f==='building'&&n.type==='building'&&(!v.trim()||G.nodes.some(x=>x!==n&&x.type==='building'&&x.building===v.trim()))){e.target.value=n.building;return toast('Building key must be unique')}
+  else{const o=n[f];n[f]=f==='floor'?+v||1:f==='images'?v.split('\n').map(x=>x.trim()).filter(Boolean):v;if(f==='type'&&(v==='junction'||v==='entrance'))n.hideDot=v==='junction';if(f==='type'&&v==='building'&&(!n.building||G.nodes.some(x=>x!==n&&x.type==='building'&&x.building===n.building))){let k=1;while(G.nodes.some(x=>x.type==='building'&&x.building===String(k)))k++;n.building=String(k)}if(f==='building'&&n.type==='building'&&o&&o!==v&&!G.nodes.some(x=>x!==n&&x.type==='building'&&x.building===o))G.nodes.forEach(x=>{if(x!==n&&x.type!=='building'&&x.building===o)x.building=v});if(f==='parent'){const p=N(v);if(p)n.building=p.building}}}
  commit()});
 $('devBtn').onclick=()=>{$('dev').classList.toggle('open');S.pend=null;floors();devUI();draw()};
 $('exp').onclick=async()=>{const j=JSON.stringify(G,null,1);$('js').value=j;$('js').select();
